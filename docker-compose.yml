@@ -1,0 +1,17 @@
+version: '3.7'
+
+services: 
+
+    backend:
+        build: .
+        stdin_open: true
+        tty: true
+        volumes: 
+            - ./src:/home/src
+        links:
+            - databases:mongo
+    
+    databases:
+        image: webhippie/mongodb
+        ports: 
+            - "27017:27017"
