@@ -1,46 +1,59 @@
-# Wetterlogger
-Wetterdaten für konfigurierbare Standorte über die openweathermap.org API abrufen und in einer mongodb Datenbank speichern. Dieses Projekt wurde für den RaspberryPi 3 entwickelt. Dank der Container-Architektur kann dieses Programm jedoch auch auf andere Systeme portiert werden.
+# OpenWeather Datalogger
+
+Fully Python written datalogger fetching weather informations from Openweathermap.org and store them at a mongodb database. This project provides a docker compse file to generate a container for maximum portability. This project was tested on RaspberryPi 3. API Requests for multiple locations included.
 
 ## Openweathermap.org API
-Die Organisation openweathermap stelle eine kostenlose API bereit, mit der Wetterdaten bis zu 1000x am Tag abgerufen werden können (max. 60 Abrufe pro Stunde). Alternativ muss auf eine kostenpflichtige Variante zurückgegriffen werden (stand 15.04.2020).
-Nach der erfolgreichen Registrierung können beliebig viele API Keys generiert werden. Diese müssen anschließend im Programm hinterlegt werden.
 
-Weitere Informationen:  
+The openweathermap organisation provide there API for free with the restriction of 1000 requests per day with a limit of 60 calls per hour. Other plans are available. There are no limitations for generating individuakl API keys.
+
+Further informations:
 [1] https://openweathermap.org/current
 
 ## Docker Container
-Mittels docker-compose werden zwei Container erzeugt. Einer beinhaltet die mongodb Datenbank und der andere stellt eine Python3 Umgebung zum Abrufen der Wetterdaten bereit.  
-Die Container können mit <i>docker-compose</i> generiert werden.
+
+docker-compose will generate two containers. A container including the mongodb database and another will provide the python3 environment to fetch weather informations. The container can be generated with the _docker-compose_ command.
+
 ```
 docker-compose build
 ```
-Nach dem erstellen können die Container mit dem folgenden Befehl gestartet werden.
+
+After the container have been built. You can start them with the following command:
+
 ```
 docker-compose up -d
 ```
 
 ### Datenbank
-Der Datenbankcontainer basiert auf einem ARM kompatiblen Image für mongodb V2. Ein Zugriff auf die Datenbank ist über den Port 27017 möglich. Es sind keine weiteren Benutzerdaten erforderlich.
+
+The database container is based on a compatible ARM image for mongodb V2. Access cover the port 21017. No further user credentials needed.
 
 ### Python3 Container
-Dieser Container basiert auf einem Ubuntu Image und stellt eine Python3 Umgebung bereit mit den installierten Python-Bibliotheken pymongo und requests.  
-Hinweis: Es muss ggf. die Zeitzone im Container geändert werden, sodass die generierten Zeitstempel mit der tatsächlichen Uhrzeit übereinstimmen.
 
-#### Python3 Container - Zeitzone ändern
-Nachdem der Container erstellt wurde muss ggf. die Zeitzone noch angepasst werden. Hierzu muss das Paket <b>tzdata</b> installiert werden. Während der Installation erfolgt auch die Einstellung der benötigten Zeitzone.
+This container is based on a Ubuntu image and provides a Python3 environment. Furthermore some python libraries will be installed like pymongo and requests.
+Note: Maybe the timezone of the container have to be changed. Sometimes wrong timestamps will be generated.
+
+#### Python3 Container - Change timezone
+
+After the container is up and running, the timezone must be changed for some users. Therefore the paket **tzdata** is needed. The required time zone is also set during installation process.
+
 ```
 apt install tzdata
 ```
 
-## Wetterdaten abrufen
-Die Wetterdaten werden mit dem Python Skript <i>get_weather.py</i> abgerufen und gesichert. Hierfür empfiehlt es sich, einen cronjob anzulegen.
+## Fetch weather informations
+
+The weather from openweathermap can be fetched and saved with the python script _get_weather.py_. It is helpful to create a cronjob for this action.
 
 ### Cronjob anlegen
-Damit die Wetterdaten automatisiert abgerufen werden, kann ein entsprechender Cronjob eingerichtet werden. Im Terminal muss dafür folgender Befehl eingegeben werden:
+
+A corresponding cron job can be set up so that the weather informations can be fetched automatically. The following command must be entered in the terminal:
+
 ```
 crontab -e
 ```
-Im folgenden Beispiel werden die Wetterdaten alle 30 min abgerufen.
+
+In the example below, the weather data is retrieved every 30 minutes:
+
 ```
 LANG=de_DE.UTF-8
 LANGUAGE=de
@@ -49,11 +62,15 @@ PYTHONENCODING=utf8
 
 */30 * * * * python3 /home/src/get_weather.py >> /home/sc/logfile 2&>1
 ```
-Alle Bildschirmausgaben des Programms werden im logfile (/home/src/logfile) gespeichert.  
-Abschließend muss der crontab Service noch gestartet werden.
+
+All screen outputs of the programm are saved in the log file located at _/home/src/logfile_.
+
+Finally the crontab service has to be started.
+
 ```
 service cron start
 ```
 
 ## Wetterdaten ausgeben
-Um die bereits gespeicherten Wetterdaten auf der Konsole auszugeben, kann die Datei <i>show_entries.py</i> ausgeführt werden.
+
+In order to output the already saved weather data on the console, file _show_entries.py_ can be executed.
