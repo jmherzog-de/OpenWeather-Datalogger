@@ -17,19 +17,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+# -*- coding: utf-8 -*-
+
 import pymongo
 
-from mongodriver import MongoDriver
-from weather import Weather
+from modules.mongodriver import MongoDriver
+from modules.weather import Weather
 
 # database parameters
-db_host = "172.18.0.2"
-db_port = "27017"
+db_host = '127.0.0.1'
+db_port = '27017'
+db_user = '#'
+db_pass = '#'
 
 try:
 
     # initialize database
-    mongo = MongoDriver(db_host, db_port)
+    mongo = MongoDriver(db_host, db_port, db_user, db_pass)
 
     entries = mongo.getAll('Vellberg')
 
