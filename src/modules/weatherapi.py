@@ -23,7 +23,7 @@ import json
 import requests
 import time
 from requests.exceptions import HTTPError
-from weather import Weather
+from modules.weather import Weather
 
 
 class WeatherAPI:
