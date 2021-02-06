@@ -1,6 +1,6 @@
 # ---> VisualStudioCode
 .vscode/*
-!.vscode/settings.json
+.venv/*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
