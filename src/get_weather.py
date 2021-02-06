@@ -1,7 +1,7 @@
 '''
 This file is part of OpenWeather-Datalogger
 
-Copyright (C) 2020  Jean-Marcel Herzog
+Copyright (C) 2021  Jean-Marcel Herzog
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # -*- coding: utf-8 -*-
 
-from weatherapi import WeatherAPI
-from mongodriver import MongoDriver
-from weather import Weather
+from modules.weatherapi import WeatherAPI
+from modules.mongodriver import MongoDriver
+from modules.weather import Weather
 
 """
 Globale Parameter
@@ -29,13 +29,15 @@ Globale Parameter
 # API parameters
 api_code = ''  # your API key
 lang = 'de'
-weather_locations = ['Stuttgart', 'Karlsruhe', 'Berlin']
+weather_locations = []
 base_url = 'http://api.openweathermap.org/data/2.5/weather?'
 req_recon_time = 10  # seconds
 
 # database parameters
-db_host = "172.18.0.2"
+db_host = "127.0.0.1"
 db_port = "27017"
+db_user = '#'
+db_pass = '#'
 
 try:
 
@@ -43,7 +45,7 @@ try:
     initialize API and database
     """
     api = WeatherAPI(api_code, lang, base_url, req_recon_time)
-    mongo = MongoDriver(db_host, db_port)
+    mongo = MongoDriver(db_host, db_port, db_user, db_pass)
 
     """
 	get weather data
@@ -54,9 +56,6 @@ try:
         if weather_data != None:
             # api.printWeatherData(weather_data)
             mongo.insertEntry(location, weather_data.toJSON())
-
-            print("> Daten fuer {0} wurden am {1} erfolgreich abgerufen.".format(
-                location, weather_data.get_tstamp(True)))
 
 except ValueError as verr:
     print("[WARNING] {0}".format(verr))
