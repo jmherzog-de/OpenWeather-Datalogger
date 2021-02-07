@@ -157,11 +157,11 @@ class WeatherAPI:
         manage snow informations
         """
         if 'snow' in json_data:
-            if '1h' in json_data['rain']:
+            if '1h' in json_data['snow']:
                 weather_obj.set_snow1h(
                     round(float(json_data['snow']['1h']), 2))
 
-            if '3h' in json_data['rain']:
+            if '3h' in json_data['snow']:
                 weather_obj.set_snow3h(
                     round(float(json_data['snow']['3h']), 2))
 
