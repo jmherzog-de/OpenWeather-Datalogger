@@ -1,146 +1,58 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{{ title }}</title>
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    </head>
-    <body>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="/">Wetterdaten</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-          
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
-                {% if location == 'Vellberg' %}
-                <li class="nav-item active"> 
-                {% else %}
-                <li class="nav-item"> 
-                {% endif %}
-                    <a class="nav-link" href="/location/Vellberg">Vellberg</a>
-                </li>
+<head>
+    <title>{{ title }}</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
 
-                {% if location == 'Heilbronn' %}
-                <li class="nav-item active">
-                {% else %}
-                <li class="nav-item">
-                {% endif %}
-                    <a class="nav-link" href="/location/Heilbronn">Heilbronn</a>
-                </li>
+<body>
 
+    {% include "nav.html" %}
 
-                {% if location == 'Stuttgart' %}
-                <li class="nav-item active">
-                {% else %}
-                <li class="nav-item">
-                {% endif %}
-                    <a class="nav-link" href="/location/Stuttgart">Stuttgart</a>
-                </li>
+    <div class="container">
+        <h2>Letze Messung</h2>
 
-                {% if location == 'Schrozberg' %}
-                <li class="nav-item active">
-                {% else %}
-                <li class="nav-item">
-                {% endif %}
-                    <a class="nav-link" href="/location/Schrozberg">Schrozberg</a>
-                </li>
+        <table class="table table-striped table-sm">
+            <tr>
+                <th>Location</th>
+                <th>Zeitstempel</th>
+                <th>Temperatur [°C]</th>
+                <th>Temperatur Max. [°C]</th>
+                <th>Temperatur Min. [°C]</th>
+                <th>Luftdruck</th>
+                <th>Beschreibung</th>
+            </tr>
 
-                {% if location == 'Schwäbisch Hall' %}
-                <li class="nav-item active">
-                {% else %}
-                <li class="nav-item">
-                {% endif %}
-                    <a class="nav-link" href="/location/Schwäbisch Hall">Schwäbisch Hall</a>
-                </li>
-              </ul>
-            </div>
-          </nav>
+            {% for location in locations %}
+            <tr>
+                <td>{{ location }}</td>
+                <td>{{ locationData[location].get_tstamp(True) }}</td>
+                <td>{{ locationData[location].get_temp() }}</td>
+                <td>{{ locationData[location].get_temp_max() }}</td>
+                <td>{{ locationData[location].get_temp_min() }}</td>
+                <td>{{ locationData[location].get_pressure() }}</td>
+                <td>{{ locationData[location].get_description() }}</td>
+            </tr>
+            {% endfor %}
 
-        <div class="container">
-            <h2>Letze Messung</h2>
+        </table>
 
-            <table class="table table-striped table-sm">
-                <tr>
-                    <th>Location</th>
-                    <th>Zeitstempel</th>
-                    <th>Temperatur [°C]</th>
-                    <th>Temperatur Max. [°C]</th>
-                    <th>Temperatur Min. [°C]</th>
-                    <th>Luftdruck</th>
-                    <th>Beschreibung</th>
-                </tr>
+    </div>
 
-                <tr>
-                    <td>Vellberg</td>
-                    <td>{{ locationData['Vellberg'].get_tstamp(True) }}</td>
-                    <td>{{ locationData['Vellberg'].get_temp() }}</td>
-                    <td>{{ locationData['Vellberg'].get_temp_max() }}</td>
-                    <td>{{ locationData['Vellberg'].get_temp_min() }}</td>
-                    <td>{{ locationData['Vellberg'].get_pressure() }}</td>
-                    <td>{{ locationData['Vellberg'].get_description() }}</td>
-                </tr>
+    <!--Optional JavaScript-->
+    <!--jQuery first, then Popper.js, then Bootsrap JS-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
 
-                <tr>
-                    <td>Heilbronn</td>
-                    <td>{{ locationData['Heilbronn'].get_tstamp(True) }}</td>
-                    <td>{{ locationData['Heilbronn'].get_temp() }}</td>
-                    <td>{{ locationData['Heilbronn'].get_temp_max() }}</td>
-                    <td>{{ locationData['Heilbronn'].get_temp_min() }}</td>
-                    <td>{{ locationData['Heilbronn'].get_pressure() }}</td>
-                    <td>{{ locationData['Heilbronn'].get_description() }}</td>
-                </tr>
-                
-                <tr>
-                    <td>Schrozberg</td>
-                    <td>{{ locationData['Schrozberg'].get_tstamp(True) }}</td>
-                    <td>{{ locationData['Schrozberg'].get_temp() }}</td>
-                    <td>{{ locationData['Schrozberg'].get_temp_max() }}</td>
-                    <td>{{ locationData['Schrozberg'].get_temp_min() }}</td>
-                    <td>{{ locationData['Schrozberg'].get_pressure() }}</td>
-                    <td>{{ locationData['Schrozberg'].get_description() }}</td>
-                </tr>
-                
-                <tr>
-                    <td>Stuttgart</td>
-                    <td>{{ locationData['Stuttgart'].get_tstamp(True) }}</td>
-                    <td>{{ locationData['Stuttgart'].get_temp() }}</td>
-                    <td>{{ locationData['Stuttgart'].get_temp_max() }}</td>
-                    <td>{{ locationData['Stuttgart'].get_temp_min() }}</td>
-                    <td>{{ locationData['Stuttgart'].get_pressure() }}</td>
-                    <td>{{ locationData['Stuttgart'].get_description() }}</td>
-                </tr>
-
-                <tr>
-                    <td>Schwäbisch Hall</td>
-                    <td>{{ locationData['Schwäbisch Hall'].get_tstamp(True) }}</td>
-                    <td>{{ locationData['Schwäbisch Hall'].get_temp() }}</td>
-                    <td>{{ locationData['Schwäbisch Hall'].get_temp_max() }}</td>
-                    <td>{{ locationData['Schwäbisch Hall'].get_temp_min() }}</td>
-                    <td>{{ locationData['Schwäbisch Hall'].get_pressure() }}</td>
-                    <td>{{ locationData['Schwäbisch Hall'].get_description() }}</td>
-                </tr>
-
-                <tr>
-                    <td>Würzburg</td>
-                    <td>{{ locationData['Würzburg'].get_tstamp(True) }}</td>
-                    <td>{{ locationData['Würzburg'].get_temp() }}</td>
-                    <td>{{ locationData['Würzburg'].get_temp_max() }}</td>
-                    <td>{{ locationData['Würzburg'].get_temp_min() }}</td>
-                    <td>{{ locationData['Würzburg'].get_pressure() }}</td>
-                    <td>{{ locationData['Würzburg'].get_description() }}</td>
-                </tr>
-                
-            </table>
-            
-        </div>
-        
-        <!--Optional JavaScript-->
-        <!--jQuery first, then Popper.js, then Bootsrap JS-->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    </body>
 </html>

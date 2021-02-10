@@ -7,59 +7,9 @@
     </head>
     <body>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="/">Wetterdaten</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-          
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
-                {% if location == 'Vellberg' %}
-                <li class="nav-item active"> 
-                {% else %}
-                <li class="nav-item"> 
-                {% endif %}
-                    <a class="nav-link" href="/location/Vellberg">Vellberg</a>
-                </li>
+        {% include "nav.html" %}
 
-                {% if location == 'Heilbronn' %}
-                <li class="nav-item active">
-                {% else %}
-                <li class="nav-item">
-                {% endif %}
-                    <a class="nav-link" href="/location/Heilbronn">Heilbronn</a>
-                </li>
-
-
-                {% if location == 'Stuttgart' %}
-                <li class="nav-item active">
-                {% else %}
-                <li class="nav-item">
-                {% endif %}
-                    <a class="nav-link" href="/location/Stuttgart">Stuttgart</a>
-                </li>
-
-                {% if location == 'Schrozberg' %}
-                <li class="nav-item active">
-                {% else %}
-                <li class="nav-item">
-                {% endif %}
-                    <a class="nav-link" href="/location/Schrozberg">Schrozberg</a>
-                </li>
-
-                {% if location == 'Schwäbisch Hall' %}
-                <li class="nav-item active">
-                {% else %}
-                <li class="nav-item">
-                {% endif %}
-                    <a class="nav-link" href="/location/Schwäbisch Hall">Schwäbisch Hall</a>
-                </li>
-              </ul>
-            </div>
-          </nav>
-
-        <div class="container">
+        <div class="container" style="overflow-x: auto;">
             <h2>Location: {{location}}</h2>
 
             <table class="table table-striped table-sm" id="sort">

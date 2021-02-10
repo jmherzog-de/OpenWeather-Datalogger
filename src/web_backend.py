@@ -28,6 +28,7 @@ db_host = '127.0.0.1'
 db_port = '27017'
 db_user = '#'
 db_pass = '#'
+glb_locations = []
 
 def getLastEntry(location):
     try:
@@ -86,18 +87,20 @@ def get_station_data(location):
 app = Flask(__name__)
 
 @app.route('/')
+@app.route('/location')
 def index():
-    lastData = {'Heilbronn': getLastEntry('Heilbronn'), 'Schwäbisch Hall': getLastEntry('Schwäbisch Hall'), 'Vellberg': getLastEntry('Vellberg'), 'Schrozberg': getLastEntry('Schrozberg'), 'Würzburg': getLastEntry('Würzburg'), 'Stuttgart': getLastEntry('Stuttgart'), 'Schwäbisch Hall': getLastEntry('Schwäbisch Hall')}
-    return render_template('index.html', title='Wetterdaten', locationData=lastData)
+    lastData = {}
+
+    for l in glb_locations:
+        lastData[l] = getLastEntry(l)
+
+    return render_template('index.html', title='Wetterdaten', locationData=lastData, location="", locations=glb_locations)
 
 @app.route('/location/<name>')
-def locationRoute(name):
-    if name == None:
-        name = 'Vellberg'
-    
+def locationRoute(name):    
     locData = get_station_data(name)
     locData.reverse()
-    return render_template('location.html', title='Wetterdaten', locationData=locData, location=name)
+    return render_template('location.html', title='Wetterdaten', locationData=locData, location=name, locations=glb_locations)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=1024, debug=True)
