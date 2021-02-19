@@ -56,7 +56,7 @@ class MongoDriver:
     def getAll(self, collection_name):
         database = self.__client["weathercrawler"]
         collection = database[str(collection_name)]
-        return collection.find()
+        return collection.find().sort("tstamp", -1).limit(96)
 
     """
     return last entry of collection
