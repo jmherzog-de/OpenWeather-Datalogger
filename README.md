@@ -23,7 +23,7 @@ After the container have been built. You can start them with the following comma
 docker-compose up -d
 ```
 
-### Datenbank
+### Database
 
 The database container is based on a compatible ARM image for mongodb V2. Access cover the port 21017. No further user credentials needed.
 
@@ -44,7 +44,7 @@ apt install tzdata
 
 The weather from openweathermap can be fetched and saved with the python script _get_weather.py_. It is helpful to create a cronjob for this action.
 
-### Cronjob anlegen
+### Create Cronjob
 
 A corresponding cron job can be set up so that the weather informations can be fetched automatically. The following command must be entered in the terminal:
 
@@ -71,6 +71,7 @@ Finally the crontab service has to be started.
 service cron start
 ```
 
-## Wetterdaten ausgeben
+## Data monitoring with flask web application
 
-In order to output the already saved weather data on the console, file _show_entries.py_ can be executed.
+The fetched data can be monitored with a python flask web application. Change debug option in file web_backend.py to False in
+production mode.
