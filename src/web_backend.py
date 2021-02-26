@@ -22,64 +22,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from flask import Flask, render_template
 from modules.mongodriver import MongoDriver
 from modules.weather import Weather
+from credentials import *
 
-# database parameters
-db_host = '127.0.0.1'
-db_port = '27017'
-db_user = '#'
-db_pass = '#'
-glb_locations = []
+"""
+return last entry from database collection for
+a specific location as a Weather object.
+"""
 
 def getLastEntry(location):
     try:
-        mongo = MongoDriver(db_host, db_port, db_user, db_pass)
-        return mongo.getLastEntry(location)
+        mongo = MongoDriver(db_host, db_port, db_name, db_user, db_pass)
+        # return of mongo.getRows() has type list
+        return mongo.getRows(location, limit=1, DESC=True, format=True)[0]
     except Exception as err:
         print(f'{err}')
-        return []
+        return None
 
-def get_station_data(location):
+
+"""
+return all entries from database collection for
+a specific location as a list of Weather objects.
+"""
+def getStationData(location):
 
     try:
-        # initialize database
-        mongo = MongoDriver(db_host, db_port, db_user, db_pass)
-
-        entries = mongo.getAll(location)
-
-        entry_list = []
-
-        for x in entries:
-            entry = Weather()
-            entry.set_temp(x['temp'])
-            entry.set_temp_max(x['temp_max'])
-            entry.set_temp_min(x['temp_min'])
-            entry.set_feels_like(x['feels_like'])
-            entry.set_pressure(x['pressure'])
-            entry.set_humidity(x['humidity'])
-            entry.set_wind_speed(x['wind_speed'])
-            if x['wind_deg'] != None:
-                entry.set_wind_deg(float(x['wind_deg']))
-            entry.set_clouds_all(x['clouds_all'])
-            if x['rain1h'] != None:
-                entry.set_rain1h(x['rain1h'])
-            if x['rain3h'] != None:
-                entry.set_rain3h(x['rain3h'])
-            if x['snow1h'] != None:
-                entry.set_snow1h(x['snow1h'])
-            if x['snow3h'] != None:
-                entry.set_snow3h(x['snow3h'])
-            if x['visibility'] != None:
-                entry.set_visibility(x['visibility'])
-            entry.set_sunrise(x['sunrise'])
-            entry.set_sunset(x['sunset'])
-            entry.set_main(x['main'])
-            entry.set_description(x['description'])
-            entry.set_tstamp(x['tstamp'])
-
-            entry_list.append(entry)
-        # end of foor loop
-
-        return entry_list
+        mongo = MongoDriver(db_host, db_port, db_name, db_user, db_pass)
+        return mongo.getRows(location, limit=96, DESC=True, format=True)
     except Exception as err:
         print(f'{err}')
         return []
@@ -89,17 +57,20 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/location')
 def index():
-    lastData = {}
 
-    for l in glb_locations:
-        lastData[l] = getLastEntry(l)
+    """
+    generate list of all locations for
+    last database entries.
+    """
+    lastData = {}
+    for station in glb_locations:
+        lastData[station] = getLastEntry(station)
 
     return render_template('index.html', title='Wetterdaten', locationData=lastData, location="", locations=glb_locations)
 
 @app.route('/location/<name>')
-def locationRoute(name):    
-    locData = get_station_data(name)
-    locData.reverse()
+def locationRoute(name):
+    locData = getStationData(name)
     return render_template('location.html', title='Wetterdaten', locationData=locData, location=name, locations=glb_locations)
 
 if __name__ == '__main__':

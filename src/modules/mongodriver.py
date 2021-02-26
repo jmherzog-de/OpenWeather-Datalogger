@@ -32,71 +32,85 @@ class MongoDriver:
     Constructor
     """
 
-    def __init__(self, host, port, username, password):
+    def __init__(self, host, port, database, username, password):
         self.__host = host
         self.__port = port
+        self.__db = str(database)
         self.__client = pymongo.MongoClient(
             "mongodb://{2}:{3}@{0}:{1}/".format(host, port, username, password))
+
+    """
+    Return collection name for given location
+    """
+
+    def generateCollectionName(self, location):
+        formattedLoc = location.lower().replace(" ", "_")
+        formattedLoc = formattedLoc.replace("ä", "ae").replace("Ä", "ae")
+        formattedLoc = formattedLoc.replace("ö", "oe").replace("Ö", "Oe")
+        formattedLoc = formattedLoc.replace("ü", "ue").replace("Ü", "Ue")
+        return formattedLoc.replace("ß", "ss")
 
     """
     write weather data informations into database
     """
 
     def insertEntry(self, collection_name, data):
-        database = self.__client["weathercrawler"]
+        collection_name = self.generateCollectionName(collection_name)
+        database = self.__client[self.__db]
         data.pop("station_name")
         data.pop("country")
         collection = database[str(collection_name)]
         return collection.insert_one(data)
 
     """
-    return all weather data entries from database
+    write raw json response from api into database
     """
 
-    def getAll(self, collection_name):
-        database = self.__client["weathercrawler"]
+    def insertRawJSON(self, collection_name, jsonData):
+        collection_name = self.generateCollectionName(collection_name)
+        database = self.__client[self.__db]
         collection = database[str(collection_name)]
-        return collection.find().sort("tstamp", -1).limit(96)
+        return collection.insert_one(jsonData)
 
     """
-    return last entry of collection
+    return all raw entries as list from database
     """
-    def getLastEntry(self, collection_name):
-        database = self.__client["weathercrawler"]
+
+    def getAllRawAsList(self, collection_name):
+        collection_name = self.generateCollectionName(collection_name)
+        database = self.__client[self.__db]
         collection = database[str(collection_name)]
-        lastEntry = collection.find_one(sort=[('$natural',-1)])
+        return list(collection.find({}))
 
-        #return lastEntry
-        #lastEntry = collection.find().sort([('$natural',-1)]).limit(1)
-        weatherObj = Weather()
-        weatherObj.set_tstamp(lastEntry['tstamp'])
-        weatherObj.set_temp(lastEntry['temp'])
-        weatherObj.set_temp_max(lastEntry['temp_max'])
-        weatherObj.set_temp_min(lastEntry['temp_min'])
-        weatherObj.set_feels_like(lastEntry['feels_like'])
-        weatherObj.set_description(lastEntry['description'])
-        weatherObj.set_pressure(lastEntry['pressure'])
-        weatherObj.set_humidity(lastEntry['humidity'])
-        weatherObj.set_wind_speed(lastEntry['wind_speed'])
-        weatherObj.set_wind_speed(lastEntry['wind_deg'])
-        
-        if lastEntry['wind_deg'] != None:
-            weatherObj.set_wind_deg(float(lastEntry['wind_deg']))
-        weatherObj.set_clouds_all(lastEntry['clouds_all'])
-        if lastEntry['rain1h'] != None:
-            weatherObj.set_rain1h(lastEntry['rain1h'])
-        if lastEntry['rain3h'] != None:
-            weatherObj.set_rain3h(lastEntry['rain3h'])
-        if lastEntry['snow1h'] != None:
-            weatherObj.set_snow1h(lastEntry['snow1h'])
-        if lastEntry['snow3h'] != None:
-            weatherObj.set_snow3h(lastEntry['snow3h'])
-        if lastEntry['visibility'] != None:
-            weatherObj.set_visibility(lastEntry['visibility'])
-        weatherObj.set_sunrise(lastEntry['sunrise'])
-        weatherObj.set_sunset(lastEntry['sunset'])
-        weatherObj.set_main(lastEntry['main'])
-        weatherObj.set_description(lastEntry['description'])
-        weatherObj.set_tstamp(lastEntry['tstamp'])
-        
-        return weatherObj
+    """
+    return all entries as Weather object list
+    """
+
+    def getAllAsList(self, collection_name):
+        collection_name = self.generateCollectionName(collection_name)
+        retList = []
+        for item in self.getAllRawAsList(collection_name):
+            retList.append(Weather(item))
+        return retList
+
+    """
+    return a set of entries with sorted elements
+    format = False return dict otherwise return list of Weather objects
+    """
+
+    def getRows(self, collection_name, limit=None, DESC=False, format=False):
+        collection_name = self.generateCollectionName(collection_name)
+        database = self.__client[self.__db]
+        collection = database[str(collection_name)]
+        ret = collection.find({})
+        if DESC == True:
+            ret.sort("tstamp", -1)
+        if limit != None:
+            ret.limit(limit)
+        if format == False:
+            return ret
+
+        retList = []
+        for item in ret:
+            retList.append(Weather(item))
+        return retList

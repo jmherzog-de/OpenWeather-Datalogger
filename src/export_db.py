@@ -1,7 +1,7 @@
 '''
 This file is part of OpenWeather-Datalogger
 
-Copyright (C) 2021  Jean-Marcel Herzog
+Copyright (C) 2020  Jean-Marcel Herzog
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,30 +18,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 # -*- coding: utf-8 -*-
-
-from modules.weatherapi import WeatherAPI
+import json
+from bson.json_util import dumps
 from modules.mongodriver import MongoDriver
-from modules.weather import Weather
 from credentials import *
 
 try:
-
-    """
-    initialize API and database
-    """
-    api = WeatherAPI(api_code, lang, base_url, req_recon_time)
     mongo = MongoDriver(db_host, db_port, db_name, db_user, db_pass)
 
-    """
-	request weather informations for every location from API server
-	"""
     for location in glb_locations:
-        weather_data = api.fetchRawWeatherData(location)
-        if weather_data != None:
-            formattedLocation = mongo.generateCollectionName(location)
-            mongo.insertRawJSON(formattedLocation, weather_data)
+        print("> Export all collections for '{0}'".format(location))
+        formattedLocation = mongo.generateCollectionName(location)
+        cursor = mongo.getAllRawAsList(formattedLocation)
+        list_cursor = list(cursor)
+        json_data = dumps(list_cursor, indent=2)
+        with open("{0}.json".format(formattedLocation), 'w') as outfile:
+            outfile.write(json_data)
 
-except ValueError as verr:
-    print("[WARNING] {0}".format(verr))
 except Exception as err:
     print("[ERROR] {0}".format(err))

@@ -187,72 +187,30 @@ class WeatherAPI:
         return weather_obj
 
     """
-    Read weather informations at specific location
+    Read raw weather informations as JSON at a specific location
     """
 
-    def fetchWeatherData(self, location):
+    def fetchRawWeatherData(self, location):
         url = self.__generateURL(location)
 
-        cnct_verusche = 0  # Anzahl der Verbindungsversuche
+        # count of connection tries
+        cnct_tries = 0
         status = 0
 
-        while (cnct_verusche < 3):
+        while(cnct_tries < 3):
             response = requests.get(url)
             status = response.status_code
-            cnct_verusche += 1
+            cnct_tries += 1
 
             if status == 200:
-                break
+                responseJSON = response.json()
+                responseJSON["tstamp"] = time.time()
+                return responseJSON
             else:
-                print(
-                    "> Request failed. Try {0}/3".format(cnct_verusche))
-
+                print("> Request failed. Try {0}/3".format(cnct_tries))
                 t0 = time.time()
                 while(time.time() < t0+self.__reconTime):
                     pass
 
-        if status == 200:
-            tstamp = time.time()
-            return self.__parseData(response, tstamp)
-        else:
-            raise Exception(
-                "No connection with API Server possible.")
-
-    """
-    Print weather informations on screen
-    """
-
-    def printWeatherData(self, weather_data):
-
-        # Calculate time for timestamp, sunrise and sunset
-        t_rise = time.localtime(weather_data.get_sunrise())
-        t_set = time.localtime(weather_data.get_sunset())
-        t_stamp = time.localtime(weather_data.get_tstamp())
-
-        print("Received following weather informations for the location {0} [{1}]:".format(
-            weather_data.get_station_name(), weather_data.get_country()))
-        print("Temperature: {0} °C".format(weather_data.get_temp()))
-        print("Fells like: {0}".format(weather_data.get_feels_like()))
-        print("Temp. max: {0} °C".format(weather_data.get_temp_max()))
-        print("Temp. min: {0} °C".format(weather_data.get_temp_min()))
-        print("Humidity: {0} %".format(
-            weather_data.get_humidity()))
-
-        print("Air pressure: {0} hPa".format(weather_data.get_pressure()))
-        print("Cloud density: {0}".format(weather_data.get_clouds_all()))
-        print("View: {0}".format(weather_data.get_visibility()))
-        print(
-            "Wind speed: {0} m/s".format(weather_data.get_wind_speed()))
-        print("Wind direction: {0} Deg.".format(weather_data.get_wind_deg()))
-        print("Rain (1h): {0}".format(weather_data.get_rain1h()))
-        print("Rain (3h): {0}".format(weather_data.get_rain3h()))
-        print("Snow (1h): {0}".format(weather_data.get_snow1h()))
-        print("Snow (3h): {0}".format(weather_data.get_snow3h()))
-        print("Description: {0}".format(weather_data.get_description()))
-        print("Main: {0}".format(weather_data.get_main()))
-        print("Sunrise: {0}:{1}:{2}".format(
-            t_rise.tm_hour, t_rise.tm_min, t_rise.tm_sec))
-        print("Sunset: {0}:{1}:{2}".format(
-            t_set.tm_hour, t_set.tm_min, t_set.tm_sec))
-        print("requested at: {0}.{1}.{2} - {3}:{4}:{5}".format(t_stamp.tm_mday,
-                                                               t_stamp.tm_mon, t_stamp.tm_year, t_stamp.tm_hour, t_stamp.tm_min, t_stamp.tm_sec))
+        if cnct_tries == 3:
+            raise Exception("No connection with API Server possible")

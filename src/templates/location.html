@@ -1,74 +1,82 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{{ title }}</title>
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    </head>
-    <body>
 
-        {% include "nav.html" %}
+<head>
+    <title>{{ title }}</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
 
-        <div class="container" style="overflow-x: auto;">
-            <h2>Location: {{location}}</h2>
+<body>
 
-            <table class="table table-striped table-sm" id="sort">
-                <thead>
-                    <tr>
-                        <th>Zeitstempel</th>
-                        <th>Temperatur [°C]</th>
-                        <th>Temperatur Max. [°C]</th>
-                        <th>Temperatur Min. [°C]</th>
-                        <th>Temp. gefühlt [°C]</th>
-                        <th>Luftdruck [Pa]</th>
-                        <th>Luftfeuchtigkeit [%]</th>
-                        <th>Windgeschwindigkeit [m/s]</th>
-                        <th>Windrichtung</th>
-                        <th>Wolken</th>
-                        <th>Regen (1h)</th>
-                        <th>Regen (3h)</th>
-                        <th>Schnee (1h)</th>
-                        <th>Schnee (3h)</th>
-                        <th>Sicht</th>
-                        <th>Sonnenaufgang</th>
-                        <th>Sonnenuntergang</th>
-                        <th>Main</th>
-                        <th>Beschreibung</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for n in locationData %}
-                    <tr>
-                        <td>{{ n.get_tstamp(True) }}</td>
-                        <td>{{ n.get_temp() }}</td>
-                        <td>{{ n.get_temp_max() }}</td>
-                        <td>{{ n.get_temp_min() }}</td>
-                        <td>{{ n.get_feels_like() }}</td>
-                        <td>{{ n.get_pressure() }}</td>
-                        <td>{{ n.get_humidity() }}</td>
-                        <td>{{ n.get_wind_speed() }}</td>
-                        <td>{{ n.get_wind_deg() }}</td>
-                        <td>{{ n.get_clouds_all() }}</td>
-                        <td>{{ n.get_rain1h() }}</td>
-                        <td>{{ n.get_rain3h() }}</td>
-                        <td>{{ n.get_snow1h() }}</td>
-                        <td>{{ n.get_snow3h() }}</td>
-                        <td>{{ n.get_visibility() }}</td>
-                        <td>{{ n.get_sunrise(True) }}</td>
-                        <td>{{ n.get_sunset(True) }}</td>
-                        <td>{{ n.get_main() }}</td>
-                        <td>{{ n.get_description() }}</td>
-                    </tr>
+    {% include "nav.html" %}
+
+    <div class="container" style="overflow-x: auto;">
+        <h2>Location: {{location}}</h2>
+
+        <table class="table table-striped table-sm" id="sort">
+            <thead>
+                <tr>
+                    <th>Zeitstempel</th>
+                    <th>Temperatur [°C]</th>
+                    <th>Temperatur Max. [°K]</th>
+                    <th>Temperatur Min. [°K]</th>
+                    <th>Temp. gefühlt [°K]</th>
+                    <th>Luftdruck [Pa]</th>
+                    <th>Luftfeuchtigkeit [%]</th>
+                    <th>Windgeschwindigkeit [m/s]</th>
+                    <th>Windrichtung</th>
+                    <th>Wolken</th>
+                    <th>Regen (1h)</th>
+                    <th>Regen (3h)</th>
+                    <th>Schnee (1h)</th>
+                    <th>Schnee (3h)</th>
+                    <th>Sicht</th>
+                    <th>Sonnenaufgang</th>
+                    <th>Sonnenuntergang</th>
+                    <th>Beschreibung</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for n in locationData %}
+                <tr>
+                    <td>{{ n.getItem('tstamp') }}</td>
+                    <td>{{ n.getItem('temp') }}</td>
+                    <td>{{ n.getItem('temp_max') }}</td>
+                    <td>{{ n.getItem('temp_min') }}</td>
+                    <td>{{ n.getItem('feels_like') }}</td>
+                    <td>{{ n.getItem('pressure') }}</td>
+                    <td>{{ n.getItem('humidity') }}</td>
+                    <td>{{ n.getItem('wind_speed') }}</td>
+                    <td>{{ n.getItem('wind_deg') }}</td>
+                    <td>{{ n.getItem('clouds') }}</td>
+                    <td>{{ n.getItem('rain1h') }}</td>
+                    <td>{{ n.getItem('rain3h') }}</td>
+                    <td>{{ n.getItem('snow1h') }}</td>
+                    <td>{{ n.getItem('snow3h') }}</td>
+                    <td>{{ n.getItem('visibility') }}</td>
+                    <td>{{ n.getItem('sunrise') }}</td>
+                    <td>{{ n.getItem('sunset') }}</td>
+                    <td>{{ n.getItem('description') }}</td>
+                </tr>
                 {% endfor %}
-                </tbody>
-            </table>
-            
-        </div>
-        
-        <!--Optional JavaScript-->
-        <!--jQuery first, then Popper.js, then Bootsrap JS-->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    </body>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!--Optional JavaScript-->
+    <!--jQuery first, then Popper.js, then Bootsrap JS-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+
 </html>

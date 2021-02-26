@@ -19,25 +19,26 @@
             <tr>
                 <th>Location</th>
                 <th>Zeitstempel</th>
-                <th>Temperatur [°C]</th>
-                <th>Temperatur Max. [°C]</th>
-                <th>Temperatur Min. [°C]</th>
+                <th>Temperatur [°K]</th>
+                <th>Temperatur Max. [°K]</th>
+                <th>Temperatur Min. [°K]</th>
                 <th>Luftdruck</th>
                 <th>Beschreibung</th>
             </tr>
 
             {% for location in locations %}
+            {% if locationData[location] != None %}
             <tr>
                 <td>{{ location }}</td>
-                <td>{{ locationData[location].get_tstamp(True) }}</td>
-                <td>{{ locationData[location].get_temp() }}</td>
-                <td>{{ locationData[location].get_temp_max() }}</td>
-                <td>{{ locationData[location].get_temp_min() }}</td>
-                <td>{{ locationData[location].get_pressure() }}</td>
-                <td>{{ locationData[location].get_description() }}</td>
+                <td>{{ locationData[location].getItem('tstamp') }}</td>
+                <td>{{ locationData[location].getItem('temp') }}</td>
+                <td>{{ locationData[location].getItem('temp_max') }}</td>
+                <td>{{ locationData[location].getItem('temp_min') }}</td>
+                <td>{{ locationData[location].getItem('pressure') }}</td>
+                <td>{{ locationData[location].getItem('description') }}</td>
             </tr>
+            {% endif %}
             {% endfor %}
-
         </table>
 
     </div>

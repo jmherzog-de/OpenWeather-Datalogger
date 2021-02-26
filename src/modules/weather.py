@@ -22,333 +22,180 @@ import time
 
 class Weather:
 
-    def __init__(self, station_name=None, country=None, temp=None, temp_max=None, temp_min=None, feels_like=None, pressure=None, humidity=None, wind_speed=None, wind_deg=None, clouds_all=None, rain1h=None, rain3h=None, snow1h=None, snow3h=None, visibility=None, sunrise=None, sunset=None, main=None, description=None, tstamp=None):
-        self.__station_name = station_name
-        self.__country = country
-        self.__temp = temp
-        self.__temp_max = temp_max
-        self.__temp_min = temp_min
-        self.__feels_like = feels_like
-        self.__pressure = pressure
-        self.__humidity = humidity
-        self.__wind_speed = wind_speed
-        self.__wind_deg = wind_deg
-        self.__clouds_all = clouds_all
-        self.__rain1h = rain1h
-        self.__rain3h = rain3h
-        self.__snow1h = snow1h
-        self.__snow3h = snow3h
-        self.__visibility = visibility
-        self.__sunrise = sunrise
-        self.__sunset = sunset
-        self.__main = main
-        self.__description = description
-        self.__tstamp = tstamp
+    def __init__(self, data=None):
+        self.__columns = {
+            "temp": {
+                "datatype": "float",
+                "jsonName": "main.temp",
+                "name": "Temperature",
+                "value": None
+            },
+            "temp_min": {
+                "datatype": "float",
+                "jsonName": "main.temp_min",
+                "name": "Temperature min.",
+                "value": None
+            },
+            "temp_max": {
+                "datatype": "float",
+                "jsonName": "main.temp_max",
+                "name": "Temperature max.",
+                "value": None
+            },
+            "feels_like": {
+                "datatype": "float",
+                "jsonName": "main.feels_like",
+                "name": "Temperature feels like",
+                "value": None
+            },
+            "pressure": {
+                "datatype": "int",
+                "jsonName": "main.pressure",
+                "name": "Pressure",
+                "value": None
+            },
+            "humidity": {
+                "datatype": "int",
+                "jsonName": "main.humidity",
+                "name": "Humidity",
+                "value": None
+            },
+            "visibility": {
+                "datatype": "int",
+                "jsonName": "visibility",
+                "name": "Visibility",
+                "value": None
+            },
+            "wind_speed": {
+                "datatype": "float",
+                "jsonName": "wind.speed",
+                "name": "Wind speed",
+                "value": None
+            },
+            "wind_deg": {
+                "datatype": "int",
+                "jsonName": "wind.deg",
+                "name": "Wind direction",
+                "value": None
+            },
+            "clouds": {
+                "datatype": "int",
+                "jsonName": "clouds.all",
+                "name": "Clouds index",
+                "value": None
+            },
+            "description": {
+                "datatype": "string",
+                "jsonName": "weather.description",
+                "name": "Description",
+                "value": None
+            },
+            "rain1h": {
+                "datatype": "float",
+                "jsonName": "rain.rain1h",
+                "name": "Rain 1h",
+                "value": None
+            },
+            "rain3h": {
+                "datatype": "float",
+                "jsonName": "rain.rain3h",
+                "name": "Rain 3h",
+                "value": None
+            },
+            "snow1h": {
+                "datatype": "float",
+                "jsonName": "snow.snow1h",
+                "name": "Snow 1h",
+                "value": None
+            },
+            "snow3h": {
+                "datatype": "float",
+                "jsonName": "snow.snow3h",
+                "name": "Snow 1h",
+                "value": None
+            },
+            "sunrise": {
+                "datatype": "timestamp",
+                "jsonName": "sys.sunrise",
+                "name": "Sunrise",
+                "value": None
+            },
+            "sunset": {
+                "datatype": "timestamp",
+                "jsonName": "sys.sunset",
+                "name": "Sunset",
+                "value": None
+            },
+            "tstamp": {
+                "datatype": "timestamp",
+                "jsonName": "tstamp",
+                "name": "Timestamp",
+                "value": None
+            }
+        }
+        # end of self.__columns
 
-    def set_station_name(self, station_name):
-        if type(station_name) == int or type(station_name) == float:
+        """
+        convert list to column data
+        """
+        # check if valid datatype
+        if data == None:
+            return
+        elif type(data) != dict:
             raise Exception(
-                "Wrong format for the parameter 'station_name' in set_station_name(...). A string was expected.")
-        self.__station_name = station_name
+                "Invalid type for data. dict was expected to initialize weather object.")
 
-    def get_station_name(self):
-        return self.__station_name
+        self.__convertDictToDataColumns(data)
 
-    def set_country(self, country):
-        if type(country) == int or type(country) == float:
+    def __convertDictToDataColumns(self, data):
+        # loop all column entries
+        for col in self.__columns:
+            # extract json name from column entry
+            jsonNameList = self.__columns[col]["jsonName"].split(".")
+            itemData = data.get(jsonNameList[0])
+            if type(itemData) == dict:
+                itemData = itemData.get(jsonNameList[1])
+            elif type(itemData) == list:
+                itemData = itemData[0].get(jsonNameList[1])
+            elif type(itemData) == float or type(itemData) == int:
+                pass
+            else:
+                continue
+
+            # check if datatype is valid for specific column
+            if self.__checkDatatype(itemData, col):
+                self.__columns[col]["value"] = itemData
+
+    def __checkDatatype(self, value, columnName):
+        dtype = self.__columns[columnName]["datatype"]
+        if dtype == "string" and type(value) != str:
             raise Exception(
-                "Wrong format for the parameter 'country' in set_country(...). A string was expected.")
-        self.__country = country
-
-    def get_country(self):
-        return self.__country
-
-    def set_temp(self, temp):
-        if type(temp) != float:
+                "Wrong format for column data '{0}'. Type string was expected.".format(columnName))
+        elif dtype == "int" and type(value) != int:
             raise Exception(
-                "Wrong format for the parameter 'temp' in set_temp(...). A float was expected.")
-        elif temp >= 50.0 or temp <= -30.0:
-            raise ValueError(
-                "Inconsistent value for 'temp' in set_temp(...) detected.")
-        self.__temp = temp
-
-    def get_temp(self):
-        return self.__temp
-
-    def set_temp_max(self, temp_max):
-        if type(temp_max) != float:
+                "Wrong format for column data '{0}'. Type int was expected.".format(columnName))
+        elif dtype == "float" and type(value) != float:
             raise Exception(
-                "Wrong format for the parameter 'temp_max' in set_temp_max(...). A float was expected.")
-        elif temp_max >= 50.0 or temp_max <= -30.0:
-            raise ValueError(
-                "Inconsistent value for 'temp_max' in set_temp_max(...) detected.")
-
-        self.__temp_max = temp_max
-
-    def get_temp_max(self):
-        return self.__temp_max
-
-    def set_temp_min(self, temp_min):
-        if type(temp_min) != float:
+                "Wrong format for column data '{0}'. Type float was expected.".format(columnName))
+        elif dtype == "timestamp" and not (type(value) == int or type(value) == float):
             raise Exception(
-                "Wrong format for the parameter 'temp_min' in set_temp_min(...). A float wwas expected.")
-        elif temp_min >= 50.0 or temp_min <= -30.0:
-            raise ValueError(
-                "Inconsistent value for 'temp_min' in set_temp_min(...) detected.")
+                "Wrong format for column data '{0}'. Type float or int was expected.".format(columnName))
 
-        self.__temp_min = temp_min
+        return True
 
-    def get_temp_min(self):
-        return self.__temp_min
-
-    def set_feels_like(self, feels_like):
-        if type(feels_like) != float:
+    def setItem(self, columnName, value):
+        if self.__columns.get(columnName) == None:
             raise Exception(
-                "Wrong format for the parameter 'feels_like' in set_feels_like(...). A float was expected.")
-        elif feels_like >= 50.0 or feels_like <= -30.0:
-            raise ValueError(
-                "Inconsisten value for 'feels_like' in set_feels_like(...) detected.")
+                "Column name '{0}' is not available".format(columnName))
+        elif(self.__checkDatatype(value, columnName)):
+            self.__columns.get(columnName)["value"] = value
 
-        self.__feels_like = feels_like
-
-    def get_feels_like(self):
-        return self.__feels_like
-
-    def set_pressure(self, pressure):
-        if type(pressure) != float:
+    def getItem(self, columnName):
+        ret = self.__columns.get(columnName)
+        if ret == None:
             raise Exception(
-                "Wrong format for the parameter 'pressure' in set_pressure(...). A float was expected.")
-        elif pressure < 0.0:
-            raise ValueError(
-                "Inconsitent value for 'pressure' in set_pressure(...) detected.")
-
-        self.__pressure = pressure
-
-    def get_pressure(self):
-        return self.__pressure
-
-    def set_humidity(self, humidity):
-        if type(humidity) != float:
-            raise Exception(
-                "Wrong format for the parameter 'humidity' in set_humidity(...). A float was expected.")
-        elif humidity < 0.0 or humidity > 100.0:
-            raise ValueError(
-                "Inconsistent value fot parameter 'humidity' in set_humidity(...) detected.")
-
-        self.__humidity = humidity
-
-    def get_humidity(self):
-        return self.__humidity
-
-    def set_wind_speed(self, wind_speed):
-        if type(wind_speed) != float:
-            raise Exception(
-                "Wrong format for the parameter 'wind_speed' in set_wind_speed(...). A float was expected.")
-        elif wind_speed < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'wind_speed' in set_wind_speed(...) detected.")
-
-        self.__wind_speed = wind_speed
-
-    def get_wind_speed(self):
-        return self.__wind_speed
-
-    def set_wind_deg(self, wind_deg):
-        if type(wind_deg) != float:
-            raise Exception(
-                "Wrong format for the parameter 'wind_deg' in set_wind_deg(...). A float was expected.")
-        elif wind_deg < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'wind_deg' in set_wind_deg(...) detected.")
-
-        self.__wind_deg = wind_deg
-
-    def get_wind_deg(self):
-        return self.__wind_deg
-
-    def set_clouds_all(self, clouds_all):
-        if type(clouds_all) != int:
-            raise Exception(
-                "Wrong format for the parameter 'clouds_all' in set_clouds_all(...). A int was expected.")
-        elif clouds_all < 0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'clouds_all' in set_clouds_all(...) detected.")
-
-        self.__clouds_all = clouds_all
-
-    def get_clouds_all(self):
-        return self.__clouds_all
-
-    def set_rain1h(self, rain1h):
-        if type(rain1h) != float:
-            raise Exception(
-                "Wrong format for the parameter 'rain1h' in set_rain1h(...). A float was expected.")
-        elif rain1h < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'rain1h' in set_rain1h(...) detected.")
-
-        self.__rain1h = rain1h
-
-    def get_rain1h(self):
-        return self.__rain1h
-
-    def set_rain3h(self, rain3h):
-        if type(rain3h) != float:
-            raise Exception(
-                "Wrong format for the parameter 'rain3h' in set_rain3h(...). A float was expected.")
-        elif rain3h < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'rain3h' in set_rain3h(...) detected.")
-
-        self.__rain3h = rain3h
-
-    def get_rain3h(self):
-        return self.__rain3h
-
-    def set_snow1h(self, snow1h):
-        if type(snow1h) != float:
-            raise Exception(
-                "Wrong format for the parameter 'snow1h' in set_snow1h(...). A float was expected.")
-        elif snow1h < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'snow1h' in set_snow1h(...) detected.")
-
-        self.__snow1h = snow1h
-
-    def get_snow1h(self):
-        return self.__snow1h
-
-    def set_snow3h(self, snow3h):
-        if type(snow3h) != float:
-            raise Exception(
-                "Wrong format for the parameter 'snow3h' in set_snow3h(...). A float was expected.")
-        elif snow3h < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'snow3h' in set_snow3h(...) detected.")
-
-        self.__snow3h = snow3h
-
-    def get_snow3h(self):
-        return self.__snow3h
-
-    def set_visibility(self, visibility):
-        if type(visibility) != int:
-            raise Exception(
-                "Wrong format for the parameter 'visibility' in set_visibility(...). A int was expected.")
-        elif visibility < 0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'visibility' in set_visibility(...) detected.")
-
-        self.__visibility = visibility
-
-    def get_visibility(self):
-        return self.__visibility
-
-    def set_sunset(self, sunset):
-        if type(sunset) != int:
-            raise Exception(
-                "Wrong format for the parameter 'sunset' in set_sunset(...). A int was expected.")
-        elif sunset < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'sunset' in set_sunset(...) detected.")
-
-        self.__sunset = sunset
-
-    def get_sunset(self, formatted=False):
-        if self.__sunset == None:
-            return None
-
-        if formatted == False:
-            return self.__sunset
-        else:
-            t = time.localtime(self.__sunset)
+                "Column name '{0}' is not available.".format(columnName))
+        elif self.__columns.get(columnName).get("datatype") == "timestamp":
+            t = time.localtime(ret.get("value"))
             return "{0}.{1}.{2} {3}:{4}:{5}".format(t.tm_mday, t.tm_mon, t.tm_year, t.tm_hour, t.tm_min, t.tm_sec)
-
-    def set_sunrise(self, sunrise):
-        if type(sunrise) != int:
-            raise Exception(
-                "Wrong format for the parameter 'sunrise' in set_sunrise(...). A int was expected.")
-        elif sunrise < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'sunrise' in set_sunrise(...) detected.")
-
-        self.__sunrise = sunrise
-
-    def get_sunrise(self, formatted=False):
-        if self.__sunrise == None:
-            return None
-
-        if formatted == False:
-            return self.__sunrise
-        else:
-            t = time.localtime(self.__sunrise)
-            return "{0}.{1}.{2} {3}:{4}:{5}".format(t.tm_mday, t.tm_mon, t.tm_year, t.tm_hour, t.tm_min, t.tm_sec)
-
-    def set_main(self, main):
-        if type(main) == int or type(main) == float:
-            raise Exception(
-                "Wrong format for the parameter 'main' in set_main(...). A string was expected.")
-
-        self.__main = main
-
-    def get_main(self):
-        return self.__main
-
-    def set_description(self, description):
-        if type(description) == int or type(description) == float:
-            raise Exception(
-                "Wrong format for the parameter 'description' in set_description(...). A string was expected.")
-
-        self.__description = description
-
-    def get_description(self):
-        return self.__description
-
-    def set_tstamp(self, tstamp):
-        if type(tstamp) != float:
-            raise Exception(
-                "Wrong format for the parameter 'tstamp' in set_tstamp(...). A float was expected.")
-        if tstamp < 0.0:
-            raise ValueError(
-                "Inconsistent value for the parameter 'tstamp' in set_tstamp(...) detected.")
-
-        self.__tstamp = tstamp
-
-    def get_tstamp(self, formatted=False):
-        if self.__tstamp == None:
-            return None
-
-        if formatted == False:
-            return self.__tstamp
-        else:
-            t = time.localtime(self.__tstamp)
-            return "{0}.{1}.{2} {3}:{4}:{5}".format(t.tm_mday, t.tm_mon, t.tm_year, t.tm_hour, t.tm_min, t.tm_sec)
-
-    """
-    Return weather information entry as JSON string
-    """
-
-    def toJSON(self):
-        data = {"station_name": self.__station_name,
-                "tstamp": self.__tstamp,
-                "country": self.__country,
-                "temp": self.__temp,
-                "temp_max": self.__temp_max,
-                "temp_min": self.__temp_min,
-                "feels_like": self.__feels_like,
-                "pressure": self.__pressure,
-                "humidity": self.__humidity,
-                "wind_speed": self.__wind_speed,
-                "wind_deg": self.__wind_deg,
-                "clouds_all": self.__clouds_all,
-                "rain1h": self.__rain1h,
-                "rain3h": self.__rain3h,
-                "snow1h": self.__snow1h,
-                "snow3h": self.__snow3h,
-                "visibility": self.__visibility,
-                "sunrise": self.__sunrise,
-                "sunset": self.__sunset,
-                "main": self.__main,
-                "description": self.__description}
-
-        return data
+        return ret.get("value")
