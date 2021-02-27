@@ -25,61 +25,61 @@ class Weather:
     def __init__(self, data=None):
         self.__columns = {
             "temp": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "main.temp",
                 "name": "Temperature",
                 "value": None
             },
             "temp_min": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "main.temp_min",
                 "name": "Temperature min.",
                 "value": None
             },
             "temp_max": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "main.temp_max",
                 "name": "Temperature max.",
                 "value": None
             },
             "feels_like": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "main.feels_like",
                 "name": "Temperature feels like",
                 "value": None
             },
             "pressure": {
-                "datatype": "int",
+                "datatype": "decimal",
                 "jsonName": "main.pressure",
                 "name": "Pressure",
                 "value": None
             },
             "humidity": {
-                "datatype": "int",
+                "datatype": "decimal",
                 "jsonName": "main.humidity",
                 "name": "Humidity",
                 "value": None
             },
             "visibility": {
-                "datatype": "int",
+                "datatype": "decimal",
                 "jsonName": "visibility",
                 "name": "Visibility",
                 "value": None
             },
             "wind_speed": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "wind.speed",
                 "name": "Wind speed",
                 "value": None
             },
             "wind_deg": {
-                "datatype": "int",
+                "datatype": "decimal",
                 "jsonName": "wind.deg",
                 "name": "Wind direction",
                 "value": None
             },
             "clouds": {
-                "datatype": "int",
+                "datatype": "decimal",
                 "jsonName": "clouds.all",
                 "name": "Clouds index",
                 "value": None
@@ -91,25 +91,25 @@ class Weather:
                 "value": None
             },
             "rain1h": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "rain.rain1h",
                 "name": "Rain 1h",
                 "value": None
             },
             "rain3h": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "rain.rain3h",
                 "name": "Rain 3h",
                 "value": None
             },
             "snow1h": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "snow.snow1h",
                 "name": "Snow 1h",
                 "value": None
             },
             "snow3h": {
-                "datatype": "float",
+                "datatype": "decimal",
                 "jsonName": "snow.snow3h",
                 "name": "Snow 1h",
                 "value": None
@@ -177,6 +177,9 @@ class Weather:
         elif dtype == "float" and type(value) != float:
             raise Exception(
                 "Wrong format for column data '{0}'. Type float was expected.".format(columnName))
+        elif dtype == "decimal" and not (type(value) == int or type(value) == float):
+            raise Exception(
+                "Wrong format for column '{0}'. Type float or int was expected.".format(columnName))
         elif dtype == "timestamp" and not (type(value) == int or type(value) == float):
             raise Exception(
                 "Wrong format for column data '{0}'. Type float or int was expected.".format(columnName))
