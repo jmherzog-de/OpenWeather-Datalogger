@@ -92,25 +92,25 @@ class Weather:
             },
             "rain1h": {
                 "datatype": "decimal",
-                "jsonName": "rain.rain1h",
+                "jsonName": "rain.1h",
                 "name": "Rain 1h",
                 "value": None
             },
             "rain3h": {
                 "datatype": "decimal",
-                "jsonName": "rain.rain3h",
+                "jsonName": "rain.3h",
                 "name": "Rain 3h",
                 "value": None
             },
             "snow1h": {
                 "datatype": "decimal",
-                "jsonName": "snow.snow1h",
+                "jsonName": "snow.1h",
                 "name": "Snow 1h",
                 "value": None
             },
             "snow3h": {
                 "datatype": "decimal",
-                "jsonName": "snow.snow3h",
+                "jsonName": "snow.3h",
                 "name": "Snow 1h",
                 "value": None
             },
@@ -153,6 +153,7 @@ class Weather:
             # extract json name from column entry
             jsonNameList = self.__columns[col]["jsonName"].split(".")
             itemData = data.get(jsonNameList[0])
+
             if type(itemData) == dict:
                 itemData = itemData.get(jsonNameList[1])
             elif type(itemData) == list:
@@ -160,6 +161,10 @@ class Weather:
             elif type(itemData) == float or type(itemData) == int:
                 pass
             else:
+                continue
+
+            # prevent inserting Null values.
+            if itemData is None:
                 continue
 
             # check if datatype is valid for specific column
