@@ -29,6 +29,7 @@ return last entry from database collection for
 a specific location as a Weather object.
 """
 
+
 def getLastEntry(location):
     try:
         mongo = MongoDriver(db_host, db_port, db_name, db_user, db_pass)
@@ -43,6 +44,8 @@ def getLastEntry(location):
 return all entries from database collection for
 a specific location as a list of Weather objects.
 """
+
+
 def getStationData(location):
 
     try:
@@ -52,12 +55,13 @@ def getStationData(location):
         print(f'{err}')
         return []
 
+
 app = Flask(__name__)
+
 
 @app.route('/')
 @app.route('/location')
 def index():
-
     """
     generate list of all locations for
     last database entries.
@@ -68,10 +72,12 @@ def index():
 
     return render_template('index.html', title='Wetterdaten', locationData=lastData, location="", locations=glb_locations)
 
+
 @app.route('/location/<name>')
 def locationRoute(name):
     locData = getStationData(name)
     return render_template('location.html', title='Wetterdaten', locationData=locData, location=name, locations=glb_locations)
 
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1024, debug=True)
+    app.run(host='0.0.0.0', port=1024, debug=False)
