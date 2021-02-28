@@ -94,6 +94,16 @@ class MongoDriver:
         return retList
 
     """
+    drop a specific collection from database
+    """
+
+    def dropCollection(self, collection_name):
+        collection_name = self.generateCollectionName(collection_name)
+        database = self.__client[self.__db]
+        collection = database[str(collection_name)]
+        collection.drop()
+
+    """
     return a set of entries with sorted elements
     format = False return dict otherwise return list of Weather objects
     """
